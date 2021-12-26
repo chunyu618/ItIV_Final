@@ -10,7 +10,7 @@ def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeT
     while dataSize > 0 and currIndex < n and currUtility > 0:
         #print(currTime, dataSize, currUtility)
         if currTime <= encounteringTime[currIndex] and currTime + 1 > encounteringTime[currIndex]:
-            # Download from the RSU for 3s
+            # Download from the RSU
             t = timeToDownload
             while t > 0 and dataSize > 0 and currUtility > 0:
                 rev += currUtility * min(B_r, dataSize)
@@ -73,7 +73,7 @@ def cnt(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownlo
     tau = 20
     m_bar = timeToDownload * B_r
     n_bar = dataSize / m_bar
-    alpha = 0.9
+    alpha = 0.8
     useCellular = False
     prevTime = 0
     
