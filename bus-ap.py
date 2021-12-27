@@ -40,9 +40,11 @@ def shift(dic):
         cnt = 0
         Sum = 0
         for i in range(1, len(dic[key])):
-            Sum += dic[key][i] - dic[key][i - 1]
-            cnt += 1
-
+            if dic[key][i] - dic[key][i - 1] < 100:
+                Sum += dic[key][i] - dic[key][i - 1]
+                cnt += 1
+        if cnt == 0:
+            return
         s = dic[key][0] - int(Sum / cnt)
         for t in range(len(dic[key])):
             dic[key][t] -= s
@@ -67,7 +69,6 @@ if __name__ == '__main__':
         #for key in dic.keys():
         #    print(key, dic[key])
         makeLog(date, dic)
-        exit(0)
 
     #for key in cnt.keys():
     #    print(key, cnt[key])
