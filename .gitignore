@@ -1,7 +1,10 @@
 main.py
-test.py
+test*
+BinPacking.py
 mobicom-traces/
 result/
+strategy*
+*.swp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
