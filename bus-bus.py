@@ -1,9 +1,9 @@
-import os
+import os, sys
 from numpy import mean
 
 def readData(path, date):
     dic = {}
-    with open(path + date, "r") as f:
+    with open(os.path.join(path, date), "r") as f:
         for line in f:
             if line.split()[0] != 'null' and line.split()[1] != 'null':
                 ID, time = line.split()[0], line.split()[2]
@@ -32,11 +32,13 @@ def makeLog(date, dic):
         f.write(str(dic[d]) + "\n")
 
 if __name__ == '__main__':
-    print("\nbus-bus\n")
-    path = "/Users/enfyshsu/NTU/110-1/ITIV/FinalProject/mobicom-traces/bus-bus/"
+    print("bus-bus")
+    path = sys.argv[1]
     files = os.listdir(path)
     for f in files:
         date = f
         dic = readData(path, date)
-        countDiff(dic)
-        makeLog(date, dic)
+        for key in dic.keys():
+            print(key, dic[key])
+        #countDiff(dic)
+        #makeLog(date, dic)
