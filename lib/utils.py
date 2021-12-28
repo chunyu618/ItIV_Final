@@ -1,5 +1,61 @@
 import random
+import json
 from math import ceil
+import numpy as np
+
+def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
+    queue = dataList[0]
+    currTime = 1
+    currIndex = 0
+    currBus = 0
+    numRsu = len(encounteringTime)
+    n = len(dataList)
+    currState = 0
+    if encounteringTime[0] <= 5:
+        currState = 1
+        currIndex += 1
+    nextState = 2
+    population = [[r, b] for r in range(B_r) for b in range(B_c)]
+    cellular_usage = 0
+
+    with open("strategy.json") as f:
+        F = json.load(f)
+
+    while queue > 0 or currTime < n:
+        # Decide downloading rate from cellular and cellular
+        print("Current Time ", currTime)
+        print(queue, currState, nextState)
+        print("Usage: ", cellular_usage)
+        print("stragety, ", F[queue][currState][nextState])
+       
+        w = list(np.array(F[queue][currState][nextState]).flatten())
+        choice = random.choices(population=population, weights=w, k=1) 
+        r = choice[0][0]
+        b = choice[0][1]
+        print("r, b, ", r, b)
+        #if currState == 1:
+        queue -= min(queue, r)
+        cellular_usage += min(queue, b) * 5
+        queue -= min(queue, b)
+        if currTime < n:
+            queue += dataList[currTime]
+
+        if currIndex < numRsu and encounteringTime[currIndex] > currTime * 5 and encounteringTime[currIndex] <= (currTime + 1) * 5:
+            currState = 1
+            currIndex += 1
+        else:
+            currState = 0
+
+        if encounteringBusTime[currBus] > currTime * 5 and encounteringTime[currBus] <= (currTime + 1) * 5:
+            if currIndex < numRsu and encounteringTime[currIndex] > (currTime + 1) * 5 and encounteringTime[currIndex] <= (currTime + 2) * 5:
+                nextState = 1
+            else:
+                nextState = 0
+            currBus += 1
+        else:
+            nextState = 2
+        currTime += 1    
+    return cellular_usage    
 
 def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0

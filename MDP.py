@@ -7,7 +7,7 @@ M = 4 # packet arrival rate 0, 1, 2, 3
 J = 2 # Encountering RSU in current time slot, yes or no
 K = 3 # Will encounter RSU in next time slot, yes, no , or unkown
 R_1 = 6 # RSU download rate at most 5
-R_2 = 3 # cellular download rate at most 2
+R_2 = 2 # cellular download rate at most 1
 lambda_0 = 1.5
 C_th = 20
 p_m = 1 / M
@@ -41,7 +41,15 @@ for i in range(Q):
                 lambda_2[i][j][k][1][2] = (1 - p_v) * (1 - p_s)
 
 
-
+for i in range(Q):
+    for j in range(J):
+        for k in range(K):
+            for r in range(R_1):
+                for b in range(R_2):
+                    if j == 0 and r > 0:
+                        prob += V[i][j][k][r][b] == 0
+                    if r == 0 and b == 0:
+                        prob += V[i][j][k][r][b] != 0
 
 
 
@@ -72,18 +80,28 @@ for i in range(Q):
                     pi[i][j][k] += V[i][j][k][r][b].varValue
             print(i, j, k, pi[i][j][k])
         
-            for r in range(R_1):
-                for b in range(R_2):
-                    if pi[i][j][k] != 0:
+            
+            if pi[i][j][k] != 0:
+                for r in range(R_1):
+                    for b in range(R_2):
                         F[i][j][k][r][b] = V[i][j][k][r][b].varValue / pi[i][j][k]
-                    else:
-                        F[i][j][k] = 1 / (R_1 * R_2)
-            print(F[i][j][k])
-            print(np.sum(F[i][j][k]))
+            else:
+                valid = 0
+                for r in range(R_1):
+                    for b in range(R_2):
+                        if (j == 0 and r > 0) == False and j * r + b <= i and i - j * r + b <= (Q - 1) - M:
+                            valid += 1
+                for r in range(R_1):
+                    for b in range(R_2):
+                        if (j == 0 and r > 0) == False and j * r + b <= i and i - j * r + b <= (Q - 1) - M:
+                            F[i][j][k][r][b] = 1 / valid
+
+            #print(F[i][j][k])
+            #print(np.sum(F[i][j][k]))
 
 
 #print("Sum over pi is ", np.sum(pi))
 print("Status:", pulp.LpStatus[prob.status])
 
-with open("strategy2.json", "w") as outfile:
+with open("strategy.json", "w") as outfile:
     json.dump(F.tolist(), outfile, indent=4)
