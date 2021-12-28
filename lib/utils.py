@@ -1,4 +1,5 @@
 import random
+from math import ceil
 
 def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0
@@ -6,7 +7,7 @@ def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeT
     currIndex = 0
     currUtility = utility
     n = len(encounteringTime)
-
+    cellular_usage = 0 # Cellular usage, counted in byte
     while dataSize > 0 and currIndex < n and currUtility > 0:
         #print(currTime, dataSize, currUtility)
         if currTime <= encounteringTime[currIndex] and currTime + 1 > encounteringTime[currIndex]:
@@ -16,6 +17,7 @@ def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeT
                 rev += currUtility * min(B_r, dataSize)
                 dataSize -= min(B_r, dataSize)
                 rev += (currUtility - cost) * min(B_c, dataSize)
+                cellular_usage += min(B_c, dataSize)
                 dataSize -= min(B_c, dataSize)
                 currUtility -= decay
                 currTime += 1
@@ -24,6 +26,7 @@ def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeT
             currIndex += 1
         else:
             rev += (currUtility - cost) * min(B_c, dataSize)
+            cellular_usage += min(B_c, dataSize)
             dataSize -= min(B_c, dataSize)
             currUtility -= decay
             currTime += 1
@@ -31,7 +34,9 @@ def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeT
     #print("DataSize is ", dataSize)
     #print("Utility ", currUtility)
     print("Best delay currTime ", currTime)
-    return rev if dataSize == 0 else -1   
+    if dataSize != 0:
+        rev = -1
+    return rev, cellular_usage
 
 def best_cost(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0
@@ -65,7 +70,7 @@ def best_cost(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeTo
     print("Best cost currTime ", currTime)
     return rev if dataSize == 0 else -1   
 
-def cnt(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
+def proposed_method(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0
     currTime = 0
     currIndex = 0
@@ -74,10 +79,11 @@ def cnt(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownlo
     T = (utility / decay) / (dataSize / (B_r * timeToDownload))
     tau = T
     m_bar = timeToDownload * B_r
-    n_bar = dataSize / m_bar
+    n_bar = ceil(dataSize / m_bar)
     alpha = 0.8
     useCellular = False
     prevTime = 0
+    cellular_usage = 0 # cellular usage, counted in bytes
     
     if n_bar * decay * (T - m_bar / B_c) > 2 * cost - decay * T - 4 / 5 * pow(n_bar, 3/2) * tau:
         #print("To use cellular")
@@ -107,8 +113,9 @@ def cnt(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownlo
                 dataSize -= min(B_r, dataSize)
                 if useCellular == True:
                     rev += currUtility * min(B_c, dataSize)
+                    cellular_usage += min(B_c, dataSize)
                     dataSize -= min(B_c, dataSize)
-                    n_bar = dataSize / m_bar
+                    n_bar = ceil(dataSize / m_bar)
                     if n_bar * decay * (T - m_bar / B_c) > 2 * cost - decay * T - 4 / 5 * pow(n_bar, 3/2) * tau:
                         #print("Decide to use cellular at ", currTime)
                         useCellular = True
@@ -123,8 +130,9 @@ def cnt(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownlo
             continue
         elif useCellular == True:
             rev += (currUtility - cost) * min(B_c, dataSize)
+            cellular_usage += min(B_c, dataSize)
             dataSize -= min(B_c, dataSize)
-            n_bar = dataSize / m_bar
+            n_bar = ceil(dataSize / m_bar)
             if n_bar * decay * (T - m_bar / B_c) > 2 * cost - decay * T - 4 / 5 * pow(n_bar, 3/2) * tau:
                 #print("Decide to use cellular at ", currTime)
                 useCellular = True
@@ -141,5 +149,7 @@ def cnt(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownlo
     #print("Utility ", currUtility)
     #print("currTime", currTime)
     print("Proposed currTime ", currTime)
-    return rev if dataSize == 0 else -1   
+    if dataSize != 0:
+        rev = -1
+    return rev, cellular_usage
             
