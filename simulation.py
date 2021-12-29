@@ -21,29 +21,41 @@ if '--real' in sys.argv:
         encounteringBusTime = json.load(f)[realSet[int(sys.argv[2])]]
         
 
-
+print("--------------- Encountering RSU Time ---------------")
 print(encounteringTime)
+print("--------------- Encountering Bus Time ---------------")
 print(encounteringBusTime)
-dataList = [1, 3, 2, 0, 2, 1, 2, 2, 3, 3, 0, 1]
-usage = MDP_approach(dataList, 6, 2, encounteringTime, encounteringBusTime)
-print(usage)
-exit(0)
+
+dataList = [[1, 0, 2, 0, 1, 2, 3, 3, 2, 0, 2, 2, 2], 
+            [3, 0, 3, 3, 0, 3, 1, 2, 0, 2, 0, 0, 3, 1, 2, 3, 0, 1, 0, 3],
+            [2, 1, 2, 2, 2, 1, 2, 3, 3, 3, 0, 3, 0, 1, 3, 1, 3, 0, 1, 0, 1, 3, 0, 0, 1, 2]
+            ]
+#usage = MDP_approach(dataList, 6, 2, encounteringTime, encounteringBusTime)
 #dataSize = 1e8 # 100 Mbits file
-dataSize = 100 # 100 Mbits file
-utility = 2500 # At most about 250s to download
+
+dataSizeList = [100, 150, 200] # 100 Mbits file
+utilityList = [2500, 3000, 4000] # At most about 250s to download
 #B_r = 5e6 # 8 Mbits/s
 #B_c = 1e6 # 1 Mbits/s 
 B_r = 5 # 8 Mbits/s
 B_c = 1 # 1 Mbits/s 
-cost = 1000 # cost for cellular
+costList = [1000, 1500, 2000] # cost for cellular
 timeToDownload = 5 # 5s to download from RSU on average
-decay_list = [6, 8, 10, 12, 14]
-print("%15s%15s%15s%15s" % ("decay", "Best cost", "Best delay", "proposed"))
+decay = 10
+print("%20s%15s%15s%15s%15s" % ("size/utility/cost", "Best cost", "Best delay", "proposed", "MDP"))
 
-for d in decay_list:
-    decay = d
-    bc = best_cost(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload)
-    bd, bd_cellular_usage = best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload)
-    ps, ps_cellular_usage = proposed_method(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload)
-    print("%15d%15d%15d%15d" % (decay, bc, bd, ps))
-    print("%15d%15d%15d%15d" % (decay, 0, bd_cellular_usage, ps_cellular_usage))
+for i in range(1):
+    dataSize = dataSizeList[i]
+    utility = utilityList[i]
+    cost = costList[i]
+    dataComingList = dataList[i]
+    bc_usage, bc_time = best_cost(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload)
+    bd_usage, bd_time = best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload)
+    ps_usage, ps_time = proposed_method(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload)
+    MDP_usage, MDP_time = MDP_approach(dataComingList, B_r+1, B_c+1, encounteringTime, encounteringBusTime)
+    
+    tmp = "%d/%d/%d" % (dataSize, utility, cost)
+    print("%20s" %(tmp))
+    print("%20s%15d%15d%15d%15d" % ("usage", bc_usage, bd_usage, ps_usage, MDP_usage))
+    print("%20s%15d%15d%15d%15d" % ("time", bc_time, bd_time, ps_time, MDP_time))
+

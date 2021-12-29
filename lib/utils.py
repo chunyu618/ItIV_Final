@@ -23,20 +23,26 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
 
     while queue > 0 or currTime < n:
         # Decide downloading rate from cellular and cellular
+        '''
         print("Current Time ", currTime)
         print(queue, currState, nextState)
         print("Usage: ", cellular_usage)
         print("stragety, ", F[queue][currState][nextState])
-       
+        '''
+        print("Current Time ", currTime)
+        print(queue, currState, nextState)
+        print("stragety, ", F[queue][currState][nextState])
+
         w = list(np.array(F[queue][currState][nextState]).flatten())
         choice = random.choices(population=population, weights=w, k=1) 
         r = choice[0][0]
         b = choice[0][1]
-        print("r, b, ", r, b)
-        #if currState == 1:
-        queue -= min(queue, r)
+        #print("r, b, ", r, b)
+        if currState == 1:
+            queue -= min(queue, r)
         cellular_usage += min(queue, b) * 5
         queue -= min(queue, b)
+        print("Queue ", queue)
         if currTime < n:
             queue += dataList[currTime]
 
@@ -45,7 +51,8 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
             currIndex += 1
         else:
             currState = 0
-
+        
+        #print("curr bus ", currBus)
         if encounteringBusTime[currBus] > currTime * 5 and encounteringTime[currBus] <= (currTime + 1) * 5:
             if currIndex < numRsu and encounteringTime[currIndex] > (currTime + 1) * 5 and encounteringTime[currIndex] <= (currTime + 2) * 5:
                 nextState = 1
@@ -55,7 +62,8 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
         else:
             nextState = 2
         currTime += 1    
-    return cellular_usage    
+        
+    return cellular_usage, currTime * 5
 
 def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0
@@ -89,10 +97,11 @@ def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeT
 
     #print("DataSize is ", dataSize)
     #print("Utility ", currUtility)
-    print("Best delay currTime ", currTime)
+    #print("Best delay currTime ", currTime)
     if dataSize != 0:
         rev = -1
-    return rev, cellular_usage
+        cellular_usage = -1
+    return cellular_usage, currTime
 
 def best_cost(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0
@@ -123,8 +132,12 @@ def best_cost(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeTo
     
     #print("DataSize is ", dataSize)
     #print("Utility ", currTime, currUtility, currIndex, dataSize)
-    print("Best cost currTime ", currTime)
-    return rev if dataSize == 0 else -1   
+    #print("Best cost currTime ", currTime)
+    cellular_usage = 0
+    if dataSize != 0:
+        rev = -1
+        cellular_usage = -1
+    return  cellular_usage, currTime
 
 def proposed_method(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
     rev = 0
@@ -204,8 +217,9 @@ def proposed_method(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, 
     
     #print("Utility ", currUtility)
     #print("currTime", currTime)
-    print("Proposed currTime ", currTime)
+    #print("Proposed currTime ", currTime)
     if dataSize != 0:
         rev = -1
-    return rev, cellular_usage
+        cellular_usage = -1
+    return cellular_usage, currTime
             

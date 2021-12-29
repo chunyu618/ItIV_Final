@@ -11,8 +11,8 @@ R_2 = 2 # cellular download rate at most 1
 lambda_0 = 1.5
 C_th = 20
 p_m = 1 / M
-p_s = 0.3
-p_v = 0.5
+p_s = 0.1
+p_v = 0.1
 C_r = 1 # cost for use RSU
 C_b = 10 # cost for use cellular
 
@@ -48,8 +48,8 @@ for i in range(Q):
                 for b in range(R_2):
                     if j == 0 and r > 0:
                         prob += V[i][j][k][r][b] == 0
-                    if r == 0 and b == 0:
-                        prob += V[i][j][k][r][b] != 0
+                    #if r == 0 and b == 0:
+                    #    prob += V[i][j][k][r][b] <= 0.999999
 
 
 
@@ -75,9 +75,12 @@ F = np.zeros((Q, J, K, R_1, R_2))
 for i in range(Q):
     for j in range(J):
         for k in range(K):
+            print(i, j, k)
             for r in range(R_1):
                 for b in range(R_2):
+                    print(V[i][j][k][r][b].varValue)
                     pi[i][j][k] += V[i][j][k][r][b].varValue
+
             print(i, j, k, pi[i][j][k])
         
             
