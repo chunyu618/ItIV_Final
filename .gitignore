@@ -1,5 +1,6 @@
 main.py
 test*
+tmp*
 BinPacking.py
 mobicom-traces/
 result/

@@ -51,28 +51,25 @@ def countDiff(dic):
             # print(avg)
     print(mean(totalAvg))
     
-def shift(dic_bus_ap, dic_bus_bus):
+def shift(dic):
 
-    for key in dic_bus_ap.keys():
+    for key in dic.keys():
         cnt = 0
         Sum = 0
 
-        for i in range(1, len(dic_bus_ap[key])):
-            if dic_bus_ap[key][i] - dic_bus_ap[key][i - 1] < 100:
-                Sum += dic_bus_ap[key][i] - dic_bus_ap[key][i - 1]
+        for i in range(1, len(dic[key])):
+            if dic[key][i] - dic[key][i - 1] < 100:
+                Sum += dic[key][i] - dic[key][i - 1]
                 cnt += 1
         
         if cnt == 0:
             return
         
-        shift_val = dic_bus_ap[key][0] - int(Sum / cnt)
-        for t in range(len(dic_bus_ap[key])):
-            dic_bus_ap[key][t] -= shift_val
-        if key in dic_bus_bus.keys():
-            for t in range(len(dic_bus_bus[key])):
-                dic_bus_bus[key][t] -= shift_val
+        shift_val = dic[key][0] - int(Sum / cnt)
+        for t in range(len(dic[key])):
+            dic[key][t] -= shift_val
 
-        dic_bus_ap[key] = dic_bus_ap[key][0: min(100, len(dic_bus_ap[key]))]
+        dic[key] = dic[key][0: min(100, len(dic[key]))]
 
 def makeLog(date, dic_bus_ap, dic_bus_bus):
     with open("result/bus-ap-res/" + date + ".json", "w") as f:
@@ -93,7 +90,8 @@ if __name__ == '__main__':
         dic_bus_ap = readData_bus_ap(path_bus_ap, date)
         dic_bus_bus = readData_bus_bus(path_bus_bus, date)
         
-        shift(dic_bus_ap, dic_bus_bus)
+        shift(dic_bus_ap)
+        shift(dic_bus_bus)
 
         #print(date)
         #print(dic_bus_ap)

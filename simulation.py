@@ -11,8 +11,9 @@ dataGenerator = ExponentialEncounteringTime(30, 500)
 #encounteringTime = dataGenerator.rand()
 
 realSet = ['3214', '3032', '3201']
+date = '2007-10-24'
 if '--real' in sys.argv:
-    with open('./result/bus-ap-res/2007-11-02.json') as f:
+    with open('./result/bus-ap-res/%s.json' % (date)) as f:
         #encounteringTime = json.load(f)['3214']
         #encounteringTime = json.load(f)['3032']
         #encounteringTime = json.load(f)['3201']
@@ -28,23 +29,25 @@ print(encounteringBusTime)
 
 dataList = [[1, 0, 2, 0, 1, 2, 3, 3, 2, 0, 2, 2, 2], 
             [3, 0, 3, 3, 0, 3, 1, 2, 0, 2, 0, 0, 3, 1, 2, 3, 0, 1, 0, 3],
-            [2, 1, 2, 2, 2, 1, 2, 3, 3, 3, 0, 3, 0, 1, 3, 1, 3, 0, 1, 0, 1, 3, 0, 0, 1, 2]
+            [2, 1, 2, 2, 2, 1, 2, 3, 3, 3, 0, 3, 0, 1, 3, 1, 3, 0, 1, 0, 1, 3, 0, 0, 1, 2],
+            [3, 2, 1, 3, 0, 1, 1, 0, 0, 1, 2, 2, 0, 1, 1, 1, 1, 1, 1, 0, 2, 3, 1, 0, 2, 3, 1, 3, 1, 3, 3, 3, 3],
+            [0, 2, 2, 3, 2, 1, 2, 2, 0, 1, 0, 0, 0, 3, 2, 1, 2, 3, 0, 0, 2, 2, 3, 3, 0, 2, 0, 1, 1, 2, 2, 2, 0, 1, 3, 2, 0, 3, 2, 3]
             ]
 #usage = MDP_approach(dataList, 6, 2, encounteringTime, encounteringBusTime)
 #dataSize = 1e8 # 100 Mbits file
 
-dataSizeList = [100, 150, 200] # 100 Mbits file
-utilityList = [2500, 3000, 4000] # At most about 250s to download
+dataSizeList = [100, 150, 200, 250, 300] # 100 Mbits file
+utilityList = [2000, 3000, 4000, 5000, 6000] # At most about 250s to download
 #B_r = 5e6 # 8 Mbits/s
 #B_c = 1e6 # 1 Mbits/s 
 B_r = 5 # 8 Mbits/s
 B_c = 1 # 1 Mbits/s 
-costList = [1000, 1500, 2000] # cost for cellular
+costList = [1000, 1500, 2000, 2500, 3000] # cost for cellular
 timeToDownload = 5 # 5s to download from RSU on average
-decay = 10
+decay = 5
 print("%20s%15s%15s%15s%15s" % ("size/utility/cost", "Best cost", "Best delay", "proposed", "MDP"))
 
-for i in range(1):
+for i in range(3):
     dataSize = dataSizeList[i]
     utility = utilityList[i]
     cost = costList[i]

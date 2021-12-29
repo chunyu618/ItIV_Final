@@ -9,6 +9,7 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
     currIndex = 0
     currBus = 0
     numRsu = len(encounteringTime)
+    numBus = len(encounteringBusTime)
     n = len(dataList)
     currState = 0
     if encounteringTime[0] <= 5:
@@ -21,7 +22,7 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
     with open("strategy.json") as f:
         F = json.load(f)
 
-    while queue > 0 or currTime < n:
+    while (queue > 0 or currTime < n) and currIndex < numRsu and currBus < numBus:
         # Decide downloading rate from cellular and cellular
         '''
         print("Current Time ", currTime)
@@ -29,9 +30,9 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
         print("Usage: ", cellular_usage)
         print("stragety, ", F[queue][currState][nextState])
         '''
-        print("Current Time ", currTime)
-        print(queue, currState, nextState)
-        print("stragety, ", F[queue][currState][nextState])
+        #print("Current Time ", currTime)
+        #print(queue, currState, nextState)
+        #print("stragety, ", F[queue][currState][nextState])
 
         w = list(np.array(F[queue][currState][nextState]).flatten())
         choice = random.choices(population=population, weights=w, k=1) 
@@ -42,7 +43,6 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
             queue -= min(queue, r)
         cellular_usage += min(queue, b) * 5
         queue -= min(queue, b)
-        print("Queue ", queue)
         if currTime < n:
             queue += dataList[currTime]
 
@@ -53,7 +53,7 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
             currState = 0
         
         #print("curr bus ", currBus)
-        if encounteringBusTime[currBus] > currTime * 5 and encounteringTime[currBus] <= (currTime + 1) * 5:
+        if currBus < numBus and encounteringBusTime[currBus] > currTime * 5 and encounteringTime[currBus] <= (currTime + 1) * 5:
             if currIndex < numRsu and encounteringTime[currIndex] > (currTime + 1) * 5 and encounteringTime[currIndex] <= (currTime + 2) * 5:
                 nextState = 1
             else:
@@ -62,7 +62,9 @@ def MDP_approach(dataList, B_r, B_c, encounteringTime, encounteringBusTime):
         else:
             nextState = 2
         currTime += 1    
-        
+    
+    if queue > 0:
+        cellular_usage = -1
     return cellular_usage, currTime * 5
 
 def best_delay(dataSize, utility, B_r, B_c, decay, cost, encounteringTime, timeToDownload):
