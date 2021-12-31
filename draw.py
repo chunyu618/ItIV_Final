@@ -46,7 +46,7 @@ def plot(title, x_name, y_name, data, min_cost, min_delay, proposed, MDP):
     plt.plot(data, min_cost, marker='.', label = "min_cost")
     plt.plot(data, proposed, marker='.', label = "proposed")
     plt.plot(data, MDP, marker='.', label = "MDP")
-    plt.legend(labels=["min_delay", "min_cost", "proposed", "MDP"], loc = 'best')
+    plt.legend(labels=["min_delay", "min_cost", "without V2V", "MDP"], loc = 'best')
 
 if __name__ == '__main__':
     data_size = [100, 150, 200]
