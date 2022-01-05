@@ -53,10 +53,10 @@ if __name__ == '__main__':
     data_rate = [1, 2, 3, 4, 5]
 
     if sys.argv[1] == '1':
-        cellular_usage_1("Cellular Usage", "Data Size (MB)", "Usage (MB)", data_size)
+        cellular_usage_1("Cellular Usage", "Data Size (Mb)", "Usage (Mb)", data_size)
     elif sys.argv[1] == '2':
-        finished_time_2("Finished Time", "Data Size (MB)", "Finished Time (s)", data_size)
+        finished_time_2("Finished Time", "Data Size (Mb)", "Finished Time (s)", data_size)
     elif sys.argv[1] == '3':
-        cellular_usage_3("Cellular Usage", "Cellular Data Rate (MB/s)", "Usage (MB)", data_rate)
+        cellular_usage_3("Cellular Usage", "Cellular Data Rate (Mb/s)", "Usage (Mb)", data_rate)
     elif sys.argv[1] == '4':
-        finished_time_4("Finished Time", "Cellular Data Rate (MB/s)", "Finished Time (s)", data_rate)
+        finished_time_4("Finished Time", "Cellular Data Rate (Mb/s)", "Finished Time (s)", data_rate)
